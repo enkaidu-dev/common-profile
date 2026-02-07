@@ -60,19 +60,19 @@ Otherwise, try both and decide which works for you. You might even want to consi
 
 ### Actions
 
-#### `*|enter`
+#### `*.enter`
 
 Use `!<NAMESPACE>.enter` to start a session with the system prompt and configuration for the namespace.
 
 E.g. `!simple.enter`
 
-#### `*|init`
+#### `*.init`
 
 Use `!<NAMESPACE>.init` to initialize your project with an `AGENTS.md` file. This will update one if it already exists.
 
 E.g. `!simple.init`
 
-#### `*|compact`
+#### `*.compact`
 
 Use `!<NAMESPACE>.compact` to create a compact context checkpoint with a hand-off summary. When your session has become long or when you're done with a particular goal or objective, this command can help to reduce the size of the context and keep enough information so that you can start your next thing.
 
@@ -80,9 +80,9 @@ This will replace your current session context with the compact version that is 
 
 E.g. `!simple.compact`
 
-#### `*|leave`
+#### `*.leave`
 
-Use `!<NAMESPACE>.compact` to leave the session started by `!*|enter`. This will perform a compaction using `!*.compact` and then take that context checkpoint / hand-off summary to the parent session. The parent session _will not be reset_.
+Use `!<NAMESPACE>.compact` to leave the session started by `!*.enter`. This will perform a compaction using `!*.compact` and then take that context checkpoint / hand-off summary to the parent session. The parent session _will not be reset_.
 
 This means you can _enter_ and _leave_ multiple times and collect and gather the checkpoints for the sessions.
 
