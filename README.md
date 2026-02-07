@@ -4,7 +4,19 @@ This is intended to be a generally useful [Enkaidu](https://enkaidu.dev/) profil
 
 An Enkaidu profile for a project lives in the `.enkaidu` folder. This repo contains the files that go **inside** the profile folder.
 
-## Usage
+<!-- TOC -->
+- [Installing](#installing)
+  - [Download](#download)
+  - [Git sub-module](#git-sub-module)
+- [Documentation](#documentation)
+  - [Namespaces](#namespaces)
+  - [Actions](#actions)
+- [Structure](#structure)
+- [Conventions](#conventions)
+- [Contributions, by invitation!](#contributions-by-invitation)
+<!-- /TOC -->
+
+## Installing
 
 ### Download
 
@@ -29,6 +41,54 @@ And run the following to pick up updates to the common profile:
 # Pull latest commit from the remote that is tracked by the submodule
 git submodule update --remote .enkaidu
 ```
+
+## Documentation
+
+### Namespaces
+
+Enter `/macro ls` to see available macros
+
+The following namespaces should be apparent:
+- `codex.` for resources based on those from [Codex](https://github.com/openai/codex).
+- `simple.` for resources that we've discovered and evolved while using Enkaidu with smaller local models.
+
+If you are running models with <= 24K of tokens in the context, use the `simple.` resources.
+
+Otherwise, try both and decide which works for you. You might even want to consider doing some work with one and then switching to the other.
+
+> 👆 While you can do so, you're better off sticking to namespace-specific commands after entering a namespace-specific session. For example, if you use `!codex.enter`, don't use `simple.*` commands until after using `!codex.leave`
+
+### Actions
+
+#### `*|enter`
+
+Use `!<NAMESPACE>.enter` to start a session with the system prompt and configuration for the namespace.
+
+E.g. `!simple.enter`
+
+#### `*|init`
+
+Use `!<NAMESPACE>.init` to initialize your project with an `AGENTS.md` file. This will update one if it already exists.
+
+E.g. `!simple.init`
+
+#### `*|compact`
+
+Use `!<NAMESPACE>.compact` to create a compact context checkpoint with a hand-off summary. When your session has become long or when you're done with a particular goal or objective, this command can help to reduce the size of the context and keep enough information so that you can start your next thing.
+
+This will replace your current session context with the compact version that is generated in a nested session.
+
+E.g. `!simple.compact`
+
+#### `*|leave`
+
+Use `!<NAMESPACE>.compact` to leave the session started by `!*|enter`. This will perform a compaction using `!*.compact` and then take that context checkpoint / hand-off summary to the parent session. The parent session _will not be reset_.
+
+This means you can _enter_ and _leave_ multiple times and collect and gather the checkpoints for the sessions.
+
+Combine this with `/session save ...` and `/session load ...` to persist checkpoints over time if that is useful.
+
+E.g. `!simple.leave`
 
 ## Structure
 
