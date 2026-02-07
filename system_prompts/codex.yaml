@@ -1,4 +1,4 @@
-codex|instructions:
+codex.instructions:
   description: Codex instruction to the LLM (paraphrased, from https://github.com/openai/codex)
   template: |
     You are a coding agent. You and the user share the same workspace and collaborate to achieve the user's goals.

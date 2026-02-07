@@ -1,4 +1,4 @@
-codex|compact_context:
+codex.compact_context:
   description: Context checkpoint compaction (from Codex)
   template: |
     You are performing a CONTEXT CHECKPOINT COMPACTION. Create a handoff summary for another LLM that will resume the task.
@@ -11,7 +11,7 @@ codex|compact_context:
 
     Be concise, structured, and focused on helping the next LLM seamlessly continue the work.
 
-codex|init_agents_md:
+codex.init_agents_md:
   description: Review current repository / folder and generate an AGENTS.md file (from Codex)
   template: |
     Generate a file named AGENTS.md that serves as a contributor guide for this repository.

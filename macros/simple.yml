@@ -1,23 +1,29 @@
-simple|enter:
+simple.enter:
   description: Start a clean session with the simple system prompt
   queries:
-    - /session push keep_history=no system_prompt_name="simple|instructions"
+    - /session push keep_history=no system_prompt_name="simple.instructions"
     - /toolset load FileManagement
     - /toolset load DateAndTime
     - /toolset load TextEditing
     - /toolset load Web select=[http_get_web_page_as_markdown]
 
-simple|compact:
+simple.compact:
   description: Prepare a compact checkpoint and reset session and resume using the handoff summary
   queries:
     - /session push
-    - /prompt use simple|compact_context
+    - /prompt use simple.compact_context
     - /session pop_and_take reset_parent=yes
 
-simple|init:
+simple.init:
   description: Generate AGENTS.md in a separate clean session.
   queries:
-    - /session push keep_history=no system_prompt_name="simple|instructions"
-    - /prompt use simple|init_agents_md
+    - /session push keep_history=no system_prompt_name="simple.instructions"
+    - /prompt use simple.init_agents_md
     - /session pop
     - Read AGENTS.md and confirm only that you have done so without further explanation.
+
+simple.leave:
+  description: Leave the session you started with `!simple.enter`, taking a compact checkpoint to the outer session.
+  queries:
+    - "!simple.compact"
+    - /session pop_and_take reset_parent=no

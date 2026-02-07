@@ -1,4 +1,4 @@
-simple|compact_context:
+simple.compact_context:
   description: Context checkpoint compaction (from Codex)
   template: |
     You are performing a CONTEXT CHECKPOINT COMPACTION. Create a handoff summary for another LLM that will resume the task.
@@ -11,44 +11,27 @@ simple|compact_context:
 
     Be concise, structured, and focused on helping the next LLM seamlessly continue the work.
 
-simple|init_agents_md:
+simple.init_agents_md:
   description: Review current folder and create an AGENTS.md file
   template: |
-    Please analyze this repository / folder and create an `AGENTS.md` file, which will be given to future instances of this AI coding agent to operate in this project.
+    Generate a file named AGENTS.md that serves as a guide to this repository for use by coding agents and assistants .
 
-    What to add:
+    Create an AGENTS.md file at the root of the repository.
 
-    1. Commands that will be commonly used, such as how to build, lint, and run tests. Include the necessary commands to develop in this codebase, such as how to run a single test.
-    2. High-level code architecture and structure so that future instances can be productive more quickly. Focus on the "big picture" architecture that requires reading multiple files to understand
+    Cover what matters
 
-    Document Requirements
+    Add sections that help an agent work effectively with your project. Popular choices:
 
-    - Use Markdown headings (#, ##, etc.) for structure.
-    - Keep the document concise. 200-400 words is optimal.
-    - Keep explanations short, direct, and specific to this repository.
-    - Provide examples where helpful (commands, directory paths, naming patterns).
-    - Maintain a professional, instructional tone.
+    - Project overview
+    - Build and test commands
+    - Code style guidelines
+    - Testing instructions
+    - Security considerations
 
-    Best practices
+    Add extra instructions
 
-    - Good rules are focused, actionable, and scoped.
-    - Avoid vague guidance. Write rules like clear internal docs
-    - Reuse rules when repeating prompts in chat
+    Commit messages or pull request guidelines, security gotchas, large datasets, deployment steps: anything you’d tell a new teammate belongs here too.
 
-    Considerations
+    Large monorepo? Use nested AGENTS.md files for subprojects
 
-    - Ignore the contents of hidden folders, including `.git/` and `.enkaidu/`
-    - Ignore the content of temporary files and folders, considering they might have various names or prefixes such as `tmp` and `temp`
-    - If there's already an `AGENTS.md`, suggest improvements to it instead of creating a new file. Read it and then review the entire project to identify changes if appropriate.
-    - When you make the initial `AGENTS.md` do not repeat yourself and do not include obvious instructions like "Provide helpful error messages to users", "Write unit tests for all new utilities", "Never include sensitive information (API keys, tokens) in code or commits"
-    - Avoid listing every component or file structure that can be easily discovered
-    - Don't include generic development practices
-    - If there are `ops` commands (in `ops.yml`) then use those when identifying development commands.
-    - If there are Cursor rules (in .cursor/rules/ or .cursorrules), CLAUDE.md, GEMINI.md or Copilot rules (in .github/copilot-instructions.md), make sure to read them and include the relevant parts.
-    - If there is a README.md, PROJECT.md, make sure to include the important parts.
-    - Do not make up information such as "Common Development Tasks", "Tips for Development", "Support and Documentation" unless this is expressly included in other files that you read.
-    - Be sure to prefix the file with the following text:
-
-    ```
-    This file provides guidance to agentic AI coding agents when working with code in this repository.
-    ```
+    Place another AGENTS.md inside each package. Agents should read the nearest file in the directory tree, so the closest one takes precedence and every subproject can ship tailored instructions.
