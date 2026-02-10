@@ -2,6 +2,8 @@
 
 This is intended to be a generally useful [Enkaidu](https://enkaidu.dev/) profile with prompts, system prompts, and macros.
 
+> ⚠️ WORK IN PROGRESS. EXPECT CHANGES.
+
 An Enkaidu profile for a project lives in the `.enkaidu` folder. This repo contains the files that go **inside** the profile folder.
 
 <!-- TOC -->
