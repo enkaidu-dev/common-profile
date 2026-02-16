@@ -1,0 +1,37 @@
+personal.launch:
+  description: Spin up a personal session and get it ready for use.
+  queries:
+    - /session new personal
+    - "!personal.enter"
+
+personal.enter:
+  description: Start a clean session with the simple system prompt
+  queries:
+    - /session push keep_history=no system_prompt_name="personal.instructions"
+    - /toolset load DateAndTime
+    - /toolset load FileManagement
+    - /toolset load TextEditing
+    - /toolset load Web select=[http_get_web_page_as_markdown]
+
+personal.compact:
+  description: Prepare a compact checkpoint and reset session and resume using the handoff summary
+  queries:
+    - /session push system_prompt=personal.summarizer
+    - /prompt use personal.update_knowledge show=no
+    - /prompt use personal.update_daily_memories show=no
+    - /prompt use personal.update_durable_memories show=no
+    - /prompt use personal.compact_context show=no
+    - /session pop_and_take reset_parent=yes
+
+personal.init:
+  description: Initialize personal workspace in separate session
+  queries:
+    - /session push keep_history=no system_prompt_name="personal.instructions"
+    - /prompt use personal.initialize show=no
+    - /session pop
+
+personal.leave:
+  description: Leave the session you started with `!personal.enter`, taking a compact checkpoint to the outer session.
+  queries:
+    - "!personal.compact"
+    - /session pop_and_take reset_parent=no

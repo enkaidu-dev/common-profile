@@ -11,8 +11,8 @@ An Enkaidu profile for a project lives in the `.enkaidu` folder. This repo conta
   - [Download](#download)
   - [Git sub-module](#git-sub-module)
 - [Documentation](#documentation)
-  - [Namespaces](#namespaces)
-  - [Actions](#actions)
+  - [Personal Memory (EXPERIMENTAL)](#personal-memory-experimental)
+  - [Coding Agents](#coding-agents)
 - [Structure](#structure)
 - [Conventions](#conventions)
 - [Contributions, by invitation!](#contributions-by-invitation)
@@ -46,11 +46,62 @@ git submodule update --remote .enkaidu
 
 ## Documentation
 
-### Namespaces
+Enkaidu doesn't have actual namespaces. Instead we use a period to separate the namespace from the name of macros, prompts and system prompts.
 
-Enter `/macro ls` to see available macros
+### Personal Memory (EXPERIMENTAL)
 
-The following namespaces should be apparent:
+> ⚠️ Requires Enkaidu 0.8.7 or later, since YAML files live in sub-folders under `prompts/`, `macros/` and `system_prompts/`.
+
+The `personal.` namespace defines actions for maintaining a persistent memory by maintaining this folder structure in your workspace:
+
+```
+.personal/
+├── INDEX.md - Navigation hub
+├── MEMORY.md - High-level synthesis
+├── AGENTS.md - Instructions for agents
+├── CONVENTIONS.md - Formatting rules
+├── memories/
+│   └── YYYY-MM-DD-memories.md - Daily chronological records
+└── knowledge/
+    └── subject-name/
+        ├── ABOUT.md - Main knowledge document
+        ├── CHANGELOG.md - Evolution of understanding
+        ├── _meta.json - Metadata
+        └── references/ - Supporting materials
+```
+
+There are a couple of ways to use these macros.
+
+#### Lifecycle macros
+
+#### `!personal.enter`
+
+Start a nested session with the system prompt and configuration for personal memory system.
+
+#### `!personal.init`
+
+Use this to initialize the personal memory system. Only needed once. If `.personal/` exists with various files, you don't need to run this macro.
+
+#### `!personal.compact`
+
+This will attempt to update memories and knowledge and then compact the current session, replacing your current session context with the compact version that is generated in a nested session.
+
+#### `!personal.leave`
+
+This will leave the session started by `!personal.enter`. It performs compaction (using `!personal.compact`) and then return the parent session _without resetting the parent session's memory_.
+
+This means you can _enter_ and _leave_ multiple times and collect and gather the checkpoints for the sessions.
+
+#### Separate session
+
+Instead of entering and leaving in your working session, you could just spin up a separate session to use for personal updates.
+
+Run `!personal.launch` to start a new session called `personal`. You can then use `/session goto personal` to switch to it.
+
+### Coding Agents
+
+Currently we have the following coding agent name spaces.
+
 - `codex.` for resources based on those from [Codex](https://github.com/openai/codex).
 - `simple.` for resources that we've discovered and evolved while using Enkaidu with smaller local models.
 
@@ -60,7 +111,7 @@ Otherwise, try both and decide which works for you. You might even want to consi
 
 > 👆 While you can do so, you're better off sticking to namespace-specific commands after entering a namespace-specific session. For example, if you use `!codex.enter`, don't use `simple.*` commands until after using `!codex.leave`
 
-### Actions
+Each namespace defined the following actions as macros.
 
 #### `*.enter`
 
@@ -91,6 +142,7 @@ This means you can _enter_ and _leave_ multiple times and collect and gather the
 Combine this with `/session save ...` and `/session load ...` to persist checkpoints over time if that is useful.
 
 E.g. `!simple.leave`
+
 
 ## Structure
 

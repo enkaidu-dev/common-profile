@@ -1,0 +1,275 @@
+personal.initialize:
+  description: Initialization Prompt
+  template: |
+    Please initialize my `.personal/` folder structure for the memory system.
+
+    ## Required Actions
+
+    1. **Check if `.personal/` exists** - If it already exists, report what's present and ask before overwriting
+
+    2. **Create folder structure:**
+      ```
+      .personal/
+      ├── INDEX.md
+      ├── MEMORY.md
+      ├── AGENTS.md
+      ├── CONVENTIONS.md
+      ├── memories/
+      └── knowledge/
+      ```
+
+    3. **Create core files with appropriate templates:**
+
+    ### INDEX.md Template
+    ```markdown
+    # Personal Memory System Index
+
+    Last Updated: [CURRENT_DATE]
+
+    ## Overview
+    This folder contains persistent memory and knowledge across sessions.
+
+    ## Active Knowledge Subjects
+    - *(None yet - subjects will be listed here as they're created)*
+
+    ## Recent Activity
+    *(Summary of last 7 days will appear here)*
+
+    ## Quick Navigation
+    - [Durable Memory](./MEMORY.md) - High-level synthesis
+    - [Agent Instructions](./AGENTS.md) - How to use this system
+    - [Conventions](./CONVENTIONS.md) - Formatting and organizational rules
+    - [Daily Memories](./memories/) - Chronological records
+    - [Knowledge Base](./knowledge/) - Subject-organized learning
+    ```
+
+    ### MEMORY.md Template
+    ```markdown
+    # Durable Memory
+
+    Last Updated: [CURRENT_DATE]
+
+    ## Overview
+    This file contains high-level synthesis of all learned knowledge and patterns. For details, see individual knowledge subjects.
+
+    ## Current Understanding
+
+    *(Key insights organized by area - cross-reference knowledge subjects for details)*
+
+    ## Patterns & Trends
+
+    *(Recurring themes identified from daily memories)*
+
+    ## Open Questions
+
+    *(Areas of uncertainty or ongoing investigation)*
+
+    ## Deprecated Understanding
+
+    *(Previous beliefs that have been updated or corrected)*
+    ```
+
+    ### AGENTS.md Template
+    ```markdown
+    # Agent Instructions
+
+    This document explains how agents should use the personal memory system.
+
+    ## File Structure
+
+    - `INDEX.md` - Start here for navigation
+    - `MEMORY.md` - High-level knowledge synthesis
+    - `memories/YYYY-MM-DD-memories.md` - Daily chronological records
+    - `knowledge/<subject>/` - Deep-dive subject knowledge
+
+    ## Usage Guidelines
+
+    ### Reading Memory
+    1. Always read `MEMORY.md` first for context
+    2. Check `INDEX.md` for available subjects
+    3. Review today's and yesterday's daily memories for recent context
+    4. Dive into knowledge subjects as needed
+
+    ### Writing Memory
+
+    #### Daily Memories
+    - File name: `YYYY-MM-DD-memories.md`
+    - Check yesterday and today for duplicates before adding
+    - Include: actions taken, decisions made, changes implemented, lessons learned
+    - Use timestamps for each entry
+    - Tag entries with relevant subjects
+
+    #### Knowledge Subjects
+    - Folder name: lowercase-with-hyphens
+    - Required files: `ABOUT.md`, `CHANGELOG.md`, `_meta.json`
+    - Optional: `references/` folder for supporting materials
+    - Focus on insights and understanding, not just data
+    - Use examples and analogies
+    - When diagrams can help clarify a topic, use mermaid diagrams (via embedded mermaid code blocks)
+
+    #### Durable Memory (MEMORY.md)
+    - Update when patterns emerge from daily memories
+    - Extract key insights from knowledge subjects
+    - No detailed explanations - cross-reference instead
+    - Track evolution of understanding
+
+    ## Conventions
+
+    ### Subject Naming
+    - Use lowercase-with-hyphens: `api-design`, `database-optimization`
+    - Be specific but not overly granular
+    - Group related concepts under one subject when appropriate
+
+    ### Deduplication
+    - Check yesterday's and today's daily memories before adding entries
+    - Intentional repetition is OK - it helps identify trends
+    - Consolidate when updating MEMORY.md
+
+    ### Metadata Format
+    Use frontmatter in knowledge files:
+    ```yaml
+    ---
+    created: YYYY-MM-DD
+    updated: YYYY-MM-DD
+    tags: [tag1, tag2]
+    confidence: high|medium|low
+    ---
+    ```
+
+    ### Cross-Referencing
+    - Use relative paths: `../knowledge/subject-name/ABOUT.md`
+    - Link related subjects in ABOUT.md
+    - Reference knowledge subjects from MEMORY.md
+
+    ## Quality Standards
+
+    - **Clarity**: Understandable months later
+    - **Conciseness**: Essential information only
+    - **Context**: Include enough "why" for future understanding
+    - **Connections**: Link related information
+    ```
+
+    ### CONVENTIONS.md Template
+    ```markdown
+    # Memory System Conventions
+
+    ## File Naming
+
+    ### Daily Memories
+    - Format: `YYYY-MM-DD-memories.md`
+    - Location: `.personal/memories/`
+    - Example: `2024-02-14-memories.md`
+
+    ### Knowledge Subjects
+    - Format: `lowercase-with-hyphens`
+    - Location: `.personal/knowledge/<subject-name>/`
+    - Examples: `error-handling`, `api-design`, `docker-configuration`
+
+    ## File Structure Standards
+
+    ### Daily Memory Entry Format
+    ```markdown
+    ## HH:MM - Brief Description
+
+    **Context**: What was happening
+
+    **Action**: What was done
+
+    **Decision**: What was decided (if applicable)
+
+    **Outcome**: What resulted
+
+    **Tags**: #tag1 #tag2 #subject-name
+    ```
+
+    ### Knowledge Subject ABOUT.md Structure
+    ```markdown
+    # Subject Name
+
+    ---
+    created: YYYY-MM-DD
+    updated: YYYY-MM-DD
+    tags: [tag1, tag2]
+    confidence: high|medium|low
+    ---
+
+    ## Overview
+    Brief description of the subject
+
+    ## Key Concepts
+    Main ideas and principles
+
+    ## Common Patterns
+    Recurring approaches that work
+
+    ## Pitfalls & Mistakes
+    What to avoid and why
+
+    ## Examples
+    Concrete illustrations
+
+    ## Related Subjects
+    - [Another Subject](../another-subject/ABOUT.md)
+
+    ## References
+    Links to external resources or local reference files
+    ```
+
+    ### Knowledge _meta.json Format
+    ```json
+    {
+      "created": "YYYY-MM-DD",
+      "updated": "YYYY-MM-DD",
+      "related_subjects": ["subject-one", "subject-two"],
+      "confidence": "high|medium|low",
+      "source_count": 3,
+      "tags": ["tag1", "tag2"]
+    }
+    ```
+
+    ### CHANGELOG.md Format
+    ```markdown
+    # Changelog: Subject Name
+
+    ## YYYY-MM-DD - Change Description
+    - What changed in understanding
+    - Why it changed
+    - Impact on related knowledge
+    ```
+
+    ## Markdown Formatting
+
+    - Use `#` for main headings
+    - Use `##` for sections
+    - Use `###` for subsections
+    - Use `-` for bullet lists
+    - Use backticks for `code` and file names
+    - Use `**bold**` for emphasis
+    - Use `*italic*` for subtle emphasis
+    - Use `>` for important callouts
+
+    ## Cross-Referencing
+
+    - Relative paths: `../knowledge/subject/ABOUT.md`
+    - Subject tags: `#subject-name`
+    - Date references: `See 2024-02-14 daily memory`
+
+    ## Metadata Conventions
+
+    ### Confidence Levels
+    - **high**: Well-tested, proven through repeated use
+    - **medium**: Seems to work, limited testing
+    - **low**: Theoretical or untested
+
+    ### Tags
+    - Use lowercase
+    - Use hyphens for multi-word tags
+    - Be consistent across files
+    - Examples: `#backend`, `#api-design`, `#debugging`
+
+    ## Update Frequency Guidelines
+
+    - **Daily Memories**: Updated during or at end of significant work sessions
+    - **Knowledge Subjects**: Updated when understanding evolves or new insights emerge
+    - **MEMORY.md**: Updated during compaction or when patterns become clear
+    - **INDEX.md**: Updated when new subjects are added or activity summary changes

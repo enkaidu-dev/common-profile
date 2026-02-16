@@ -1,0 +1,20 @@
+personal.auto_update_knowledge:
+  description: Identify and update knowledge subjects
+  queries:
+    - /session push
+    - /prompt use personal.update_knowledge show=no
+    - /prompt use personal.update_daily_memories show=no
+    - /session push system_prompt=personal.summarizer
+    - Briefly summarize the knowledge and memory we updated, if any.
+    - /session pop_and_take
+    - /session pop_and_take
+
+personal.update_knowledge_of:
+  description: Add/update knowledge of a specific subject
+  queries:
+    - /prompt use personal.update_knowledge_about show=no
+
+personal.remember:
+  description: Remember a specific topic or subject
+  queries:
+    - /prompt use personal.remember_this show=no

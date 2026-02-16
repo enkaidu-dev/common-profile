@@ -1,0 +1,95 @@
+personal.compact_context:
+  description: Session Compaction Prompt
+  template: |
+    Please compact the current session by:
+    1. Updating daily memories with what we've done
+    2. Creating a concise summary of the session that can replace the full conversation history
+    3. Suggesting any updates to durable memory or knowledge subjects if warranted
+
+    ## Instructions
+
+    ### Step 1: Update Daily Memories
+
+    Follow the daily memory update process:
+    - Extract actions, decisions, changes, and lessons from this session
+    - Check for duplicates in yesterday's and today's memories
+    - Add entries to `.personal/memories/[TODAY'S DATE]-memories.md`
+    - Use proper formatting and tags
+
+    ### Step 2: Create Session Summary
+
+    Generate a summary that includes:
+
+    **Session Context:**
+    - What we were working on
+    - What goals we had
+    - What challenges we faced
+
+    **Key Actions Taken:**
+    - Main tasks completed
+    - Decisions made and their rationale
+    - Changes implemented
+    - Problems solved
+
+    **Important Outcomes:**
+    - What was learned
+    - What was created/modified
+    - What worked well
+    - What didn't work
+
+    **Current State:**
+    - Where we are now
+    - What's ready to continue
+    - What's pending or blocked
+    - Next logical steps
+
+    **References:**
+    - Link to today's daily memory for details
+    - Link to any relevant knowledge subjects
+    - Note any files created or modified
+
+    ### Step 3: Memory System Updates
+
+    Evaluate whether this session warrants:
+
+    **New Knowledge Subject:**
+    - Did we develop deep understanding in a new area?
+    - Is there enough material for a standalone subject?
+    - Would future sessions benefit from this being documented?
+
+    **Update Existing Knowledge Subject:**
+    - Did we evolve our understanding of an existing subject?
+    - Should we update ABOUT.md or CHANGELOG.md?
+    - Should we add references or examples?
+
+    **Update Durable Memory (MEMORY.md):**
+    - Did patterns emerge that should be captured?
+    - Did we answer any open questions?
+    - Did any understanding become deprecated?
+
+    ## Output
+
+    Provide three sections:
+
+    ### 1. Daily Memory Confirmation
+    "✓ Daily memories updated for [DATE]"
+    - Brief list of what was added
+
+    ### 2. Session Summary
+    The complete summary as described above, formatted for easy reading.
+    This summary should be comprehensive enough that we can continue our work with just this summary instead of the full conversation history.
+
+    ### 3. Recommended Memory Updates
+    - List any suggested updates to knowledge subjects or durable memory
+    - Provide rationale for each suggestion
+    - Offer to make these updates if requested
+
+    ## Usage
+
+    After receiving this compaction:
+    - You can start a new session with just the summary as context
+    - The full details are preserved in daily memories
+    - Knowledge is available through the memory system
+    - Session history is trimmed while preserving essential information
+
+    This enables longer-running projects without overwhelming context windows.
