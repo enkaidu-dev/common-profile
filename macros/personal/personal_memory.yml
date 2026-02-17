@@ -1,37 +1,20 @@
-personal.launch:
-  description: Spin up a personal session and get it ready for use.
+personal.auto_update_knowledge:
+  description: Identify and update knowledge subjects
   queries:
-    - /session new personal
-    - "!personal.enter"
-
-personal.enter:
-  description: Start a clean session with the simple system prompt
-  queries:
-    - /session push keep_history=no system_prompt_name="personal.instructions"
-    - /toolset load DateAndTime
-    - /toolset load FileManagement
-    - /toolset load TextEditing
-    - /toolset load Web select=[http_get_web_page_as_markdown]
-
-personal.compact:
-  description: Prepare a compact checkpoint and reset session and resume using the handoff summary
-  queries:
-    - /session push system_prompt=personal.summarizer
+    - /session push
     - /prompt use personal.update_knowledge show=no
     - /prompt use personal.update_daily_memories show=no
-    - /prompt use personal.update_durable_memories show=no
-    - /prompt use personal.compact_context show=no
-    - /session pop_and_take reset_parent=yes
+    - /session push system_prompt=personal.summarizer
+    - Briefly summarize the knowledge and memory we updated, if any.
+    - /session pop_and_take
+    - /session pop_and_take
 
-personal.init:
-  description: Initialize personal workspace in separate session
+personal.update_knowledge_of:
+  description: Add/update knowledge of a specific subject
   queries:
-    - /session push keep_history=no system_prompt_name="personal.instructions"
-    - /prompt use personal.initialize show=no
-    - /session pop
+    - /prompt use personal.update_knowledge_about show=no
 
-personal.leave:
-  description: Leave the session you started with `!personal.enter`, taking a compact checkpoint to the outer session.
+personal.remember:
+  description: Remember a specific topic or subject
   queries:
-    - "!personal.compact"
-    - /session pop_and_take reset_parent=no
+    - /prompt use personal.remember_this show=no
