@@ -73,19 +73,19 @@ personal.update_daily_memories:
     ## After updating:
     - Report what was added
     - Suggest if any entries warrant creating/updating knowledge subjects
-    - Suggest if patterns are emerging that should update MEMORY.md
+    - Suggest if patterns are emerging that should update .personal/MEMORY.md
 
 personal.update_durable_memories:
-  description: Update Durable Memory (MEMORY.md) Prompt
+  description: Update Durable Memory (.personal/MEMORY.md) Prompt
   template: |
-    Please update my durable memory (`MEMORY.md`) based on recent daily memories and knowledge subjects.
+    Please update my durable memory (`.personal/MEMORY.md`) based on recent daily memories and knowledge subjects.
 
     ## Instructions
 
     1. **Review sources**:
       - Read all daily memories from the last [SPECIFY TIMEFRAME: e.g., "7 days", "30 days", "since last update"]
       - Review all knowledge subjects in `.personal/knowledge/`
-      - Check the current `MEMORY.md` to understand what's already captured
+      - Check the current `.personal/MEMORY.md` to understand what's already captured
 
     2. **Identify patterns**:
       - Look for recurring themes across multiple daily memories
@@ -99,7 +99,7 @@ personal.update_durable_memories:
       - What understanding has evolved or changed?
       - What new areas of knowledge have been developed?
 
-    4. **Update MEMORY.md sections**:
+    4. **Update .personal/MEMORY.md sections**:
 
       ### Current Understanding
       - Add new knowledge areas
@@ -138,7 +138,7 @@ personal.update_durable_memories:
 
     ## Output Format
 
-    - Update the existing `MEMORY.md` file
+    - Update the existing `.personal/MEMORY.md` file
     - Preserve existing valuable content
     - Add new sections as needed
     - Remove or archive outdated information that's no longer relevant
@@ -173,21 +173,21 @@ personal.remember_this:
       - Why it's significant
       - Key details or decisions
       - Relevant tags
-    4. **Evaluate significance**: Determine if "{{ arg.topic }}" warrants updating durable memory (MEMORY.md)
+    4. **Evaluate significance**: Determine if "{{ arg.topic }}" warrants updating durable memory (.personal/MEMORY.md)
 
     ## Criteria for Durable Memory Update
 
-    Update MEMORY.md if "{{ arg.topic }}" is:
+    Update .personal/MEMORY.md if "{{ arg.topic }}" is:
     - **Particularly significant**: Major decision, important insight, or critical learning
     - **Sensitive**: Something that should be top-of-mind in future sessions
     - **Pattern-forming**: Relates to recurring themes or established knowledge subjects
     - **High-impact**: Likely to affect future work or decisions
 
-    If updating MEMORY.md, add to the appropriate section with cross-reference to today's daily memory.
+    If updating .personal/MEMORY.md, add to the appropriate section with cross-reference to today's daily memory.
 
     ## Report Back
 
     - Confirmed what was captured in daily memory
-    - Whether MEMORY.md was updated and why (or why not)
+    - Whether .personal/MEMORY.md was updated and why (or why not)
     - Suggested tags applied
     - Related knowledge subjects (if any)
