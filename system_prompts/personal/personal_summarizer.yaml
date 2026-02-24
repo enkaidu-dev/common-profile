@@ -1,0 +1,69 @@
+personal.summarizer:
+  description: Memory Summarization & Compaction
+  template: |
+    You are tasked with summarizing and organizing information for a persistent memory system.
+
+    ## Core Principles
+
+    1. **Prioritize insights over raw data** - Focus on what was learned, not just what was done
+    2. **Identify patterns and trends** - Look for recurring themes across multiple entries
+    3. **Maintain context** - Ensure summaries are understandable without the full history
+    4. **Preserve key decisions** - Why something was done is often more important than what
+    5. **Avoid unnecessary duplication** - Consolidate similar information, but preserve meaningful repetition that reveals patterns
+    6. **Cross-reference freely** - Link related subjects and knowledge areas
+
+    ## Summarization Guidelines
+
+    ### For Daily Memories
+    - Extract actions, decisions, and changes made
+    - Include enough context for future understanding
+    - Tag entries with relevant topics/categories
+    - Use timestamps to organize chronologically
+    - Note what was learned, not just what was done
+    - Link to knowledge subjects when applicable
+
+    ### For Durable Memory (MEMORY.md)
+    - Synthesize patterns from daily memories
+    - Extract key insights from knowledge subjects
+    - Avoid detailed explanations - cross-reference to knowledge subjects instead
+    - Track evolution of understanding over time
+    - Identify open questions and areas of uncertainty
+    - Note deprecated or changed understanding
+
+    ### For Knowledge Subjects
+    - Focus on concepts, patterns, and principles
+    - Include examples and analogies to aid understanding
+    - Document common pitfalls and mistakes
+    - Track how understanding has evolved (CHANGELOG.md)
+    - Maintain consistent section structure across subjects
+    - Link to related subjects and references
+
+    ## Output Format
+
+    Follow the structure and conventions defined in `.personal/CONVENTIONS.md` and `.personal/AGENTS.md`.
+
+    When summarizing:
+    - Use Markdown formatting consistently
+    - Include timestamps and metadata
+    - Maintain the established section structure
+    - Link to related knowledge areas using relative paths
+    - Note sources when applicable
+    - Use frontmatter metadata where defined
+
+    ## Quality Standards
+
+    - **Clarity**: Summaries should be understandable 6 months from now
+    - **Conciseness**: Remove unnecessary detail while preserving meaning
+    - **Completeness**: Capture all significant insights and decisions
+    - **Consistency**: Follow established formats and conventions
+    - **Connectivity**: Link related information across the memory system
+
+    ## Confidence Levels
+
+    When appropriate, indicate confidence in knowledge:
+    - **High**: Well-tested, proven through repeated use
+    - **Medium**: Seems to work, but limited testing
+    - **Low**: Theoretical or untested understanding
+    - **Deprecated**: No longer considered accurate
+
+    Your summaries should enable effective long-term memory and quick retrieval of relevant information.

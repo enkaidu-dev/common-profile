@@ -1,0 +1,100 @@
+personal.update_knowledge_about:
+  description: Update Knowledge Subject Prompt
+  arguments:
+    subject:
+      description: What subject do you want to update / incorporate?
+  template: |
+    Please update my knowledge on the subject "{{ arg.subject }}" based on our current session.
+
+    ## Task
+
+    1. **Check existing**: Look for the subject in `.personal/knowledge/` and read all files if present
+    2. **Extract from session**: Identify concepts, patterns, pitfalls, examples, and decisions about {{ subject }}
+    3. **Synthesize**: Determine what's genuinely new understanding vs. session-specific actions
+    4. **Update or create**:
+      - If exists: Update ABOUT.md, add CHANGELOG entry, update _meta.json
+      - If new: Create subject folder with all standard files (follow CONVENTIONS.md templates)
+    5. **Cross-reference**: Update INDEX.md if new, link related subjects, tag daily memories with #{{ subject }}
+
+    ## Focus On
+
+    - Insights and understanding, not just what we did
+    - Patterns that emerged about "{{ arg.subject }}"
+    - What works, what doesn't, and why
+    - Examples that illuminate concepts
+    - How this relates to other subjects
+    - When {{ arg.subject }} involves system architecture, data flow, relationships, or technical concepts that would benefit from visualization, embed mermaid diagrams directly in ABOUT.md using mermaid code blocks
+
+    ## Report Back
+
+    - What was created or updated
+    - Key knowledge captured
+    - Confidence level assigned
+    - Related subjects identified
+    - Whether MEMORY.md should be updated based on this
+
+personal.update_knowledge:
+  description: Identify and Update Knowledge Subjects
+  template: |
+    Please analyze our current session to identify which knowledge subjects need updating, then update them.
+
+    ## Task
+
+    ### Phase 1: Identify Subjects
+
+    1. **Review existing subjects**: List all subjects in `.personal/knowledge/`
+    2. **Analyze session**: Determine which existing subjects are relevant to our conversation
+    3. **Evaluate update needs**: For each relevant subject, assess:
+      - Did we gain new insights about this subject?
+      - Did we discover patterns or pitfalls?
+      - Did we create useful examples?
+      - Did our understanding evolve or contradict existing knowledge?
+    4. **Check for new subjects**: Identify any substantial new topics not yet captured
+
+    ### Phase 2: Update Existing Subjects (Automatic)
+
+    For each existing subject that needs updating:
+    - Read existing knowledge files
+    - Extract relevant insights from our session
+    - Update ABOUT.md with new understanding
+    - Add CHANGELOG entry explaining what changed
+    - Update _meta.json metadata
+    - Note cross-references to other subjects
+    - Embed mermaid diagrams (as mermaid code blocks) directly in ABOUT.md when architecture, data flow, or technical concepts would benefit from visualization
+
+    **Proceed automatically with these updates** - no confirmation needed.
+
+    ### Phase 3: Propose New Subjects (Requires Confirmation)
+
+    If new subjects were identified:
+    - List each proposed new subject with rationale
+    - **Ask for confirmation before creating**
+    - Only create new subjects after user approval
+
+    ## Report Format
+
+    ### Initial Report:
+    ```
+    Analyzing session against X existing subjects...
+
+    Updating existing subjects:
+    - subject-name-1: [Brief reason - e.g., "new pattern discovered"]
+    - subject-name-2: [Brief reason - e.g., "contradicts existing approach"]
+
+    [Proceed with updates automatically]
+
+    ---
+
+    Potential new subjects identified:
+    - new-subject-1: [Brief reason - e.g., "substantial learning on new topic"]
+    - new-subject-2: [Brief reason]
+
+    Would you like me to create these new subjects? (yes/no)
+    ```
+
+    ### After Updates:
+    For each updated subject, report:
+    - Subject name
+    - What was added/changed
+    - Key insight captured
+    - Confidence level adjustment (if any)

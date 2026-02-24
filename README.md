@@ -1,24 +1,37 @@
 # Common Profile for Enkaidu
 
-This is intended to be a generally useful [Enkaidu](https://enkaidu.dev/) profile with prompts, system prompts, and macros.
+> ☝️ COMPATIBILITY - Requires Enkaidu 0.8.8 or better
 
-> ⚠️ WORK IN PROGRESS. EXPECT CHANGES.
+> ⚠️ WORK IN PROGRESS, some namespaces are more "in progress" than orders. Stables ones are identified below.
 
-An Enkaidu profile for a project lives in the `.enkaidu` folder. This repo contains the files that go **inside** the profile folder.
+This is an [Enkaidu](https://enkaidu.dev/) "profile" with multiple "purpose-driven" namespaces containint custom prompts, system prompts, and macros. Each namespace provides a consistent way of engaging with it.
+
+- "Enter" via a forked session
+- "Init" after entering if using the namespace for the first-time in current project
+- "Compact" current session
+- "Leave" forked session you _entered_ earlier, which performs namespace-specific closing operations before running compacting and exiting the session.
+
+Additionally, as a convenience, you can "Launch" into a separate session, automatically invoking "Enter" as well.
 
 <!-- TOC -->
-- [Installing](#installing)
+**Table of contents**
+- [Getting started](#getting-started)
   - [Download](#download)
-  - [Git sub-module](#git-sub-module)
-- [Documentation](#documentation)
-  - [Namespaces](#namespaces)
-  - [Actions](#actions)
-- [Structure](#structure)
-- [Conventions](#conventions)
+  - [Git submodule](#git-submodule)
+- [Naming](#naming)
+- [STABLE](#stable)
+  - [Coding Agents](#coding-agents)
+- [EXPERIMENTAL](#experimental)
+  - [Personal Memory (EXPERIMENTAL)](#personal-memory-experimental)
+- [Development](#development)
+  - [Structure](#structure)
+  - [Conventions](#conventions)
 - [Contributions, by invitation!](#contributions-by-invitation)
 <!-- /TOC -->
 
-## Installing
+## Getting started
+
+An Enkaidu profile for a project lives in the `.enkaidu` folder. This repo contains the files that go **inside** the profile folder.
 
 ### Download
 
@@ -29,7 +42,7 @@ An Enkaidu profile for a project lives in the `.enkaidu` folder. This repo conta
 
 > 🧐 Tip: You can keep this folder in your home or `Documents` folder and then create an alias (macOS) or short-cut (Windows) or symlink (Linux-likes) to the folder in any and all project folders.
 
-### Git sub-module
+### Git submodule
 
 To use it entirely in your project's Git repo, pull it in as a submodule and map it to `.enkaidu` like so:
 
@@ -44,13 +57,18 @@ And run the following to pick up updates to the common profile:
 git submodule update --remote .enkaidu
 ```
 
-## Documentation
+## Naming
 
-### Namespaces
+Enkaidu doesn't support namespaces syntactically. Instead we use a period `'.'` in the name of prompts, system prompts and macros to separate the namespace from their functional names, like so: `<NAMESPACE>.<FUNCTION>`
 
-Enter `/macro ls` to see available macros
+E.g. `codex.init` vs `simple.init`
 
-The following namespaces should be apparent:
+## STABLE
+
+### Coding Agents
+
+Currently we have the following coding agent name spaces.
+
 - `codex.` for resources based on those from [Codex](https://github.com/openai/codex).
 - `simple.` for resources that we've discovered and evolved while using Enkaidu with smaller local models.
 
@@ -58,41 +76,65 @@ If you are running models with <= 24K of tokens in the context, use the `simple.
 
 Otherwise, try both and decide which works for you. You might even want to consider doing some work with one and then switching to the other.
 
-> 👆 While you can do so, you're better off sticking to namespace-specific commands after entering a namespace-specific session. For example, if you use `!codex.enter`, don't use `simple.*` commands until after using `!codex.leave`
+> 👆 While you can try otherwise, you're better off sticking to namespace-specific commands after entering a namespace-specific session. For example, if you use `!codex.enter`, don't use `simple.*` commands until after using `!codex.leave`
 
-### Actions
+Each namespace defined the following actions as macros.
 
-#### `*.enter`
 
-Use `!<NAMESPACE>.enter` to start a session with the system prompt and configuration for the namespace.
+<!-- markdown-table-prettify-ignore-start -->
+Action      | Example
+------------|------------------
+Use `!<NAMESPACE>.enter` to start a session with the system prompt and configuration for the namespace. | `!simple.enter`
+Use `!<NAMESPACE>.init` to initialize your project with an `AGENTS.md` file. This will update one if it already exists. | `!simple.init`
+Use `!<NAMESPACE>.compact` to create a compact context checkpoint with a hand-off summary. When your session has become long or when you're done with a particular goal or objective, this command can help to reduce the size of the context and keep enough information so that you can start your next thing. **This will replace your current session context with the compact version that is generated in a nested session.** | `!simple.compact`
+Use `!<NAMESPACE>.leave` to leave the session started by `!*.enter`. This will perform a compaction using `!*.compact` and then take that context checkpoint / hand-off summary to the parent session. **The parent session _will not be reset_**. You can _enter_ and _leave_ multiple times and collect and gather the checkpoints for the sessions.<br>*Combine this with `/session save ...` and `/session load ...` to persist checkpoints over time if that is useful.* | `!simple.leave`
+<!-- markdown-table-prettify-ignore-end -->
 
-E.g. `!simple.enter`
+## EXPERIMENTAL
 
-#### `*.init`
+### Personal Memory (EXPERIMENTAL)
 
-Use `!<NAMESPACE>.init` to initialize your project with an `AGENTS.md` file. This will update one if it already exists.
+The `personal.` namespace defines actions for maintaining a persistent memory by maintaining this folder structure in your workspace:
 
-E.g. `!simple.init`
+```
+.personal/
+├── INDEX.md - Navigation hub
+├── MEMORY.md - High-level synthesis
+├── AGENTS.md - Instructions for agents
+├── CONVENTIONS.md - Formatting rules
+├── memories/
+│   └── YYYY-MM-DD-memories.md - Daily chronological records
+└── knowledge/
+    └── subject-name/
+        ├── ABOUT.md - Main knowledge document
+        ├── CHANGELOG.md - Evolution of understanding
+        ├── _meta.json - Metadata
+        └── references/ - Supporting materials
+```
 
-#### `*.compact`
+There are a couple of ways to use these macros.
 
-Use `!<NAMESPACE>.compact` to create a compact context checkpoint with a hand-off summary. When your session has become long or when you're done with a particular goal or objective, this command can help to reduce the size of the context and keep enough information so that you can start your next thing.
+#### Lifecycle actions
 
-This will replace your current session context with the compact version that is generated in a nested session.
+<!-- markdown-table-prettify-ignore-start -->
+Action              | Description
+--------------------|--------------------
+`!personal.enter`   | Start a nested session with the system prompt and configuration for personal memory system.
+`!personal.init`    | Use this to initialize the personal memory system. Only needed once. If `.personal/` exists with various files, you don't need to run this macro.
+`!personal.compact` | This will attempt to update memories and knowledge and then compact the current session, replacing your current session context with the compact version that is generated in a nested session.
+`!personal.leave`   | This will leave the session started by `!personal.enter`. It performs compaction (using `!personal.compact`) and then return the parent session _without resetting the parent session's memory_.<br>This means you can _enter_ and _leave_ multiple times and collect and gather the checkpoints for the sessions.
+<!-- markdown-table-prettify-ignore-end -->
 
-E.g. `!simple.compact`
+#### Utility actions
 
-#### `*.leave`
+#### Separate session
 
-Use `!<NAMESPACE>.compact` to leave the session started by `!*.enter`. This will perform a compaction using `!*.compact` and then take that context checkpoint / hand-off summary to the parent session. The parent session _will not be reset_.
+Instead of entering and leaving in your working session, you could just spin up a separate session to use for personal updates.
 
-This means you can _enter_ and _leave_ multiple times and collect and gather the checkpoints for the sessions.
+Run `!personal.launch` to start a new session called `personal`. You can then use `/session goto personal` to switch to it.
 
-Combine this with `/session save ...` and `/session load ...` to persist checkpoints over time if that is useful.
-
-E.g. `!simple.leave`
-
-## Structure
+## Development
+### Structure
 
 An [Enkaidu profile](https://enkaidu.dev/docs/using_enkaidu/profiles/) can have prompts, system prompts, and macros in single respectively named YAML files, or as many YAML files within respectively named folders.
 
@@ -104,7 +146,7 @@ Folder            | Description
 `prompts/`        | Contains prompts in functionally names YAML files
 `system_prompts/` | Contains system prompts in functionally names YAML files
 
-## Conventions
+### Conventions
 
 1. When macros, prompts, and system_prompts are related, there should be a file with the same name in each folder so that it's clear the capabilities are related.
 
