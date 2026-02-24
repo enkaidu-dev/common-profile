@@ -21,17 +21,17 @@ personal.compact:
     - /prompt use personal.update_daily_memories show=no
     - /prompt use personal.update_durable_memories show=no
     - /prompt use personal.compact_context show=no
-    - /session pop_and_take reset_parent=yes
+    - /session pop retain=last_full replace=yes
 
 personal.init:
   description: Initialize personal workspace in separate session
   queries:
     - /session push keep_history=no system_prompt_name="personal.instructions"
     - /prompt use personal.initialize show=no
-    - /session pop
+    - /session pop retain=session_outline
 
 personal.leave:
   description: Leave the session you started with `!personal.enter`, taking a compact checkpoint to the outer session.
   queries:
     - "!personal.compact"
-    - /session pop_and_take reset_parent=no
+    - /session pop retain=last_full
