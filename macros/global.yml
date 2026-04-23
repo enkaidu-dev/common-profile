@@ -1,0 +1,54 @@
+# These are globally usable macros.
+
+task:
+  description: |
+    Fork a session (keeping history) and run a query and bring back the session outline.
+    Usage: `!task QUOTED_PROMPT`
+  queries:
+    - /session push
+    - |
+      %{1}
+      Conclude with a handoff summary of the work done.
+    - /session pop retain=session_outline
+
+task_json:
+  description: |
+    Fork a session (keeping history) and run a query that provides a response matching a given JSON response schema.
+    Usage: `!task_json QUOTED_PROMPT schema=RESPONSE_SCHEMA_PATH`
+    The JSON response schema file must match the following format:
+    > `{ "name" : <string>, "description": <string>, "strict": <bool>, "schema": <object> }`
+  queries:
+    - /session push
+    - /include response_json_schema %{schema}
+    - |
+      %{1}
+      The response MUST conform the response schema.
+    - /session pop retain=session_outline
+
+analyze:
+  description: |
+    Fork an isolated session (no history) and ask for an analysis of a file
+    Usage: `!about QUOTED_FILEPATH`
+  queries:
+    - /session push
+    - |
+      Step-by-step, identify the main points about the content of the file `%{1}, explaining their significance as you go.
+      Then, summarize the entire text in three to five sentences, focusing on the key findings and their implications.
+      Take the type of the file and thus its purpose into consideration when identifying the main points.
+      E.g. if source code, consider its purpose, objectives, and usage.
+      E.g. if a document, consider its arguments
+      E.g. if structured data, consider the structure and usefulness
+    - /session pop retain=session_outline
+
+brief:
+  description: |
+    Fork an isolated session (no history) and ask for brief analysis of a file
+    Usage: `!about QUOTED_FILEPATH`
+  queries:
+    - /session push
+    - |
+      Provide a bullet-point summary of the the file `%{1}, listing what it is, its purpose and structure.
+      Include supporting evidence, and respond with 5-7 concise bullet points.
+      Avoid unnecessary detail and focus on the most important takeaways.
+    - /session pop retain=session_outline
+
