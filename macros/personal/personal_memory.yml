@@ -6,8 +6,8 @@ personal.auto_update_knowledge:
     - /prompt use personal.update_daily_memories show=no
     - /session push system_prompt=personal.summarizer
     - Briefly summarize the knowledge and memory we updated, if any.
-    - /session pop_and_take
-    - /session pop_and_take
+    - /session pop retain=session_outline
+    - /session pop retain=last_full
 
 personal.update_knowledge_of:
   description: Add/update knowledge of a specific subject

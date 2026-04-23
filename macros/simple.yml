@@ -11,14 +11,14 @@ simple.compact:
   description: Prepare a compact checkpoint and reset session and resume using the handoff summary
   queries:
     - /session push
-    - /prompt use simple.compact_context
-    - /session pop_and_take reset_parent=yes
+    - /prompt use simple.compact_context show=no
+    - /session pop retain=last_outline replace=yes
 
 simple.init:
   description: Generate AGENTS.md in a separate clean session.
   queries:
     - /session push keep_history=no system_prompt_name="simple.instructions"
-    - /prompt use simple.init_agents_md
+    - /prompt use simple.init_agents_md show=no
     - /session pop
     - Read AGENTS.md and confirm only that you have done so without further explanation.
 
@@ -26,4 +26,4 @@ simple.leave:
   description: Leave the session you started with `!simple.enter`, taking a compact checkpoint to the outer session.
   queries:
     - "!simple.compact"
-    - /session pop_and_take reset_parent=no
+    - /session pop retain=last_full
