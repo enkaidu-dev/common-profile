@@ -16,12 +16,15 @@ Additionally, as a convenience, you can "Launch" into a separate session, automa
 <!-- TOC -->
 **Table of contents**
 - [Getting started](#getting-started)
-  - [Download](#download)
   - [Git submodule](#git-submodule)
+  - [Download](#download)
 - [Naming](#naming)
 - [STABLE](#stable)
+  - [Global](#global)
+- [Global macros](#global-macros)
   - [Coding Agents](#coding-agents)
 - [EXPERIMENTAL](#experimental)
+  - [Skills (EXPERIMENTAL)](#skills-experimental)
   - [Personal Memory (EXPERIMENTAL)](#personal-memory-experimental)
 - [Development](#development)
   - [Structure](#structure)
@@ -105,6 +108,22 @@ Each namespace defined the following actions as macros.
 <!-- markdown-table-prettify-ignore-end -->
 
 ## EXPERIMENTAL
+
+### Skills (EXPERIMENTAL)
+
+The goal of these macros is to help understand and use (and create) skills without building the notion of skills into Enkaidu.
+
+Two skills are pre-defined as they are used by the skill creator macro:
+- `about-skills`
+- `skill-creator`
+
+The following macros related to skills are available to play with.
+
+| Action         | Example                  | Include history? | Description                                                                                                                                                                                                                                                            |
+|----------------|--------------------------|------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `skill.list`   | `!skill.list`            | No               | Lists all skills found in `./.enkaidu/skills`. Returns a JSON array where each element contains the front‑matter fields from every `SKILL.md` (name, description, etc.).                                                                                               |
+| `skill.use`    | `!skill.use SKILLNAME`   | N/a              | Loads the named skill into the current session. Reads `./.enkaidu/skills/<name>/SKILL.md`, verifies the file exists, outputs a concise summary of the skill, and any next‑step instructions if applicable.                                                             |
+| `skill.create` | `!skill.create "Prompt"` | Yes              | Initiates a 2‑level nested session to create a new skill from the quoted prompt. It calls `about-skills` and `skill-creator`, proposes candidate names, and after confirmation automatically creates the skill folder and files, then returns to the original session. |
 
 ### Personal Memory (EXPERIMENTAL)
 
