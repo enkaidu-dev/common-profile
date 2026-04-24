@@ -11,6 +11,18 @@ task:
       Conclude with a handoff summary of the work done.
     - /session pop retain=session_outline
 
+task_agent:
+  description: |
+    Fork a session with history, run a query, and bring back the session outline. Encourage spawning agent.
+    Usage: `!task QUOTED_PROMPT`
+  queries:
+    - /session push
+    - |
+      %{1}
+      Use an agent when processing a file (without asking agent to use more agents).
+      Conclude with a handoff summary of the work done.
+    - /session pop retain=session_outline
+
 task_json:
   description: |
     Fork a session (keeping history) and run a query that provides a response matching a given JSON response schema.
@@ -51,4 +63,3 @@ brief:
       Include supporting evidence, and respond with 5-7 concise bullet points.
       Avoid unnecessary detail and focus on the most important takeaways.
     - /session pop retain=session_outline
-
