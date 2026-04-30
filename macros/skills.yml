@@ -1,0 +1,45 @@
+skill.list:
+  description: Find and list available skills in the `.enkaidu/skills` folder.
+  queries:
+    - /session push keep_history=no
+    - /include response_json_schema './.enkaidu/skills/about-skills/assets/skill-list-schema.json'
+    - |
+        Skills are stored in the `./.enkaidu/skills` folder. If the folder doesn't exist, there are NO skills; do not look elsewhere.
+        Each sub-folder is a skill if and only if it contains a `SKILL.md` file with YAML front-matter.
+        If there are a lot of skills, use an agent to analyze the skills and bring back the information from the front-matter (without asking agent to use more agents.)
+        To identify the available skills, read only lines 1 to 10 each skill's `SKILL.md` file and process the front-matter.
+    - List the available skills as a JSON array with each skill as an object with properties from the front-matter.
+    - /session pop retain=last_outline
+
+# skill.eval:
+#   description: NOT DEFINED.
+
+skill.use:
+  description: |
+    Load a skill by its name into current session.
+    Usage: `!skill.use SKILLNAME`
+  queries:
+    - |
+        Read the skill `./.enkaidu/skills/%{1}/SKILL.md`. If there is no matching file, stop and let the user know immediately.
+        Make sure you understand the skill and provide a very short summary of the skill.
+        Provide next steps for using the skill iff applicable.
+
+skill.create:
+  description: |
+    Create a skill based on the prompt (use quotes) that describes the purpose of the skill.
+    This will return control within a 2-level nested session. Continue prompting to
+    complete the skill, then use `/session pop` twice to return to your original session.
+    Usage: `!skill.create QUOTEDPROMPT`
+  queries:
+    - /session push
+    - "!skill.use about-skills"
+    - "!skill.use skill-creator"
+    - /session push
+    - /toolset load Web
+    - |
+        Please help me create a skill that can do the following:
+        %{1}
+
+        Use agents to research the topics, you should be able to download content from the web.
+        Then before proceeding, propose some names for the skill and let me choose one.
+        When a name is chosen, proceed to create the skill folder and files.
