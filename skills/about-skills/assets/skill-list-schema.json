@@ -5,14 +5,15 @@
   "schema": {
     "type": "array",
     "$schema": "http://json-schema.org/draft-04/schema#",
-    "description": "",
+    "description": "List of available skills for Enkaidu",
     "minItems": 1,
     "uniqueItems": true,
     "items": {
       "type": "object",
       "required": [
         "name",
-        "description"
+        "description",
+        "path"
       ],
       "properties": {
         "name": {
@@ -21,6 +22,11 @@
         },
         "description": {
           "type": "string",
+          "minLength": 1
+        },
+        "path": {
+          "type": "string",
+          "description": "Full path to the skill's SKILL.md file",
           "minLength": 1
         },
         "license": {
