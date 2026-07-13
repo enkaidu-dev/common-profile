@@ -1,6 +1,6 @@
 # Common Profile for Enkaidu
 
-> ☝️ COMPATIBILITY - Requires Enkaidu 0.8.10 or better
+> ☝️ COMPATIBILITY - Requires Enkaidu 0.9.10 or better
 
 > ⚠️ WORK IN PROGRESS, some namespaces are more "in progress" than orders. Stables ones are identified below.
 
@@ -15,26 +15,39 @@ Additionally, as a convenience, you can "Launch" into a separate session, automa
 
 <!-- TOC -->
 **Table of contents**
-- [Getting started](#getting-started)
+- [USAGE](#usage)
+  - [Clone and symlink](#clone-and-symlink)
   - [Git submodule](#git-submodule)
   - [Download](#download)
-- [Naming](#naming)
 - [STABLE](#stable)
-  - [Global](#global)
-- [Global macros](#global-macros)
+  - [Global macros](#global-macros)
   - [Coding Agents](#coding-agents)
 - [EXPERIMENTAL](#experimental)
   - [Skills (EXPERIMENTAL)](#skills-experimental)
-  - [Personal Memory (EXPERIMENTAL)](#personal-memory-experimental)
 - [Development](#development)
-  - [Structure](#structure)
+  - [Naming](#naming)
   - [Conventions](#conventions)
 - [Contributions, by invitation!](#contributions-by-invitation)
 <!-- /TOC -->
 
-## Getting started
+## USAGE
 
 An Enkaidu profile for a project lives in the `.enkaidu` folder. This repo contains the files that go **inside** the profile folder.
+
+### Clone and symlink
+
+If you have your own `.enkaidu/` folder with other content, or if you want to share across projects but not commit / include in your codebase / repo, you can do this:
+
+1. Clone the repo somewhere outside your project.
+```sh
+git clone https://github.com/enkaidu-dev/common-profile.git
+```
+2. From your project's repo, use `ln -s` to symlink the entire repo as `.enkaidu`, OR create an `.enkaidu/` folder and then symlink in the sub-folders, OR ... you get the idea. ;-)
+```sh
+# For example
+ln -s ../common-profile .enkaidu
+```
+3. Add `.enkaidu` to your `.gitignore` file
 
 ### Git submodule
 
@@ -51,6 +64,8 @@ And run the following to pick up updates to the common profile:
 git submodule update --remote .enkaidu
 ```
 
+> 🧐 Tip: You can put the submodule under a different folder and then use symlinks as described in the section above.
+
 ### Download
 
 [Download a ZIP file](https://github.com/enkaidu-dev/common-profile/archive/refs/heads/main.zip) of the entire repo and
@@ -60,17 +75,9 @@ git submodule update --remote .enkaidu
 
 > 🧐 Tip: You can keep this folder in your home or `Documents` folder and then create an alias (macOS) or short-cut (Windows) or symlink (Linux-likes) to the folder in any and all project folders.
 
-## Naming
-
-Enkaidu doesn't support namespaces syntactically. Instead we use a period `'.'` in the name of prompts, system prompts and macros to separate the namespace from their functional names, like so: `<NAMESPACE>.<FUNCTION>`
-
-E.g. `codex.init` vs `simple.init`
-
 ## STABLE
 
-### Global
-
-## Global macros
+### Global macros
 
 The profile defines four globally usable macros: **task**, **task_json**, **analyze**, and **brief**. Each macro follows a uniform three‑step workflow: start a fresh session, run a user‑provided query, and then clean up the session while preserving the outline. This design allows the macros to be invoked from any namespace while keeping the execution context isolated and deterministic.
 
@@ -86,25 +93,24 @@ The profile defines four globally usable macros: **task**, **task_json**, **anal
 
 Currently we have the following coding agent name spaces.
 
-- `codex.` for resources based on those from [Codex](https://github.com/openai/codex).
-- `simple.` for resources that we've discovered and evolved while using Enkaidu with smaller local models.
+- `codex.` for macros / prompts based on those from [Codex](https://github.com/openai/codex).
+- `dev.` for macros / prompts that we've discovered and evolved while using Enkaidu with smaller local models.
 
-If you are running models with <= 24K of tokens in the context, use the `simple.` resources.
+> 👆 If you are running models with <= 32K of tokens in the context, use the `dev.` macros.
 
-Otherwise, try both and decide which works for you. You might even want to consider doing some work with one and then switching to the other.
+Feel free to try both and decide which works for you. You might even want to consider doing some work with one and then switching to the other.
 
-> 👆 While you can try otherwise, you're better off sticking to namespace-specific commands after entering a namespace-specific session. For example, if you use `!codex.enter`, don't use `simple.*` commands until after using `!codex.leave`
+> 👆 While you can mix macros from one namespace after using `.enter` from another, though I suggest sticking to namespace-specific macros after entering a namespace-specific session until you `.leave` that session.
 
-Each namespace defined the following actions as macros.
-
+Each namespace (referred to as `NS` below) defines the following actions as macros.
 
 <!-- markdown-table-prettify-ignore-start -->
 | Action                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | Example           |
 |-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------|
-| Use `!<NAMESPACE>.enter` to start a session with the system prompt and configuration for the namespace.                                                                                                                                                                                                                                                                                                                                                                       | `!simple.enter`   |
-| Use `!<NAMESPACE>.init` to initialize your project with an `AGENTS.md` file. This will update one if it already exists.                                                                                                                                                                                                                                                                                                                                                       | `!simple.init`    |
-| Use `!<NAMESPACE>.compact` to create a compact context checkpoint with a hand-off summary. When your session has become long or when you're done with a particular goal or objective, this command can help to reduce the size of the context and keep enough information so that you can start your next thing. **This will replace your current session context with the compact version that is generated in a nested session.**                                           | `!simple.compact` |
-| Use `!<NAMESPACE>.leave` to leave the session started by `!*.enter`. This will perform a compaction using `!*.compact` and then take that context checkpoint / hand-off summary to the parent session. **The parent session _will not be reset_**. You can _enter_ and _leave_ multiple times and collect and gather the checkpoints for the sessions.<br>*Combine this with `/session save ...` and `/session load ...` to persist checkpoints over time if that is useful.* | `!simple.leave`   |
+| Use `!<NS>.enter` to start a session with the system prompt and configuration for the namespace.                                                                                                                                                                                                                                                                                                                                                                       | `!dev.enter` or `!codex.enter`   |
+| Use `!<NS>.init` to initialize your project with an `AGENTS.md` file. This will update one if it already exists.                                                                                                                                                                                                                                                                                                                                                       | `!simple.init`  or `!codex.init`   |
+| Use `!<NS>.compact` to create a compact context checkpoint with a hand-off summary. When your session has become long or when you're done with a particular goal or objective, this command can help to reduce the size of the context and keep enough information so that you can start your next thing. **This will replace your current session context with the compact version that is generated in a nested session.**                                           | `!simple.compact` or `!codex.compact` |
+| Use `!<NS>.leave` to leave the session started by `!*.enter`. This will perform a compaction using `!*.compact` and then take that context checkpoint / hand-off summary to the parent session. **The parent session _will not be reset_**. You can _enter_ and _leave_ multiple times and collect and gather the checkpoints for the sessions.<br>*Combine this with `/session save ...` and `/session load ...` to persist checkpoints over time if that is useful.* | `!simple.leave` or `!codex.leave`   |
 <!-- markdown-table-prettify-ignore-end -->
 
 ## EXPERIMENTAL
@@ -119,57 +125,13 @@ Two skills are pre-defined as they are used by the skill creator macro:
 
 The following macros related to skills are available to play with.
 
-| Action         | Example                  | Include history? | Description                                                                                                                                                                                                                                                            |
-|----------------|--------------------------|------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `skill.list`   | `!skill.list`            | No               | Lists all skills found in `./.enkaidu/skills`. Returns a JSON array where each element contains the front‑matter fields from every `SKILL.md` (name, description, etc.).                                                                                               |
-| `skill.use`    | `!skill.use SKILLNAME`   | N/a              | Loads the named skill into the current session. Reads `./.enkaidu/skills/<name>/SKILL.md`, verifies the file exists, outputs a concise summary of the skill, and any next‑step instructions if applicable.                                                             |
-| `skill.create` | `!skill.create "Prompt"` | Yes              | Initiates a 2‑level nested session to create a new skill from the quoted prompt. It calls `about-skills` and `skill-creator`, proposes candidate names, and after confirmation automatically creates the skill folder and files, then returns to the original session. |
-
-### Personal Memory (EXPERIMENTAL)
-
-> THIS DOES NOT WORK AS EXPECTED ... I'll leave them here for now, but I don't recommend using them.
-
-The `personal.` namespace defines actions for maintaining a persistent memory by maintaining this folder structure in your workspace:
-
-```
-.personal/
-├── INDEX.md - Navigation hub
-├── MEMORY.md - High-level synthesis
-├── AGENTS.md - Instructions for agents
-├── CONVENTIONS.md - Formatting rules
-├── memories/
-│   └── YYYY-MM-DD-memories.md - Daily chronological records
-└── knowledge/
-    └── subject-name/
-        ├── ABOUT.md - Main knowledge document
-        ├── CHANGELOG.md - Evolution of understanding
-        ├── _meta.json - Metadata
-        └── references/ - Supporting materials
-```
-
-There are a couple of ways to use these macros.
-
-#### Lifecycle actions
-
-<!-- markdown-table-prettify-ignore-start -->
-| Action              | Description                                                                                                                                                                                                                                                                                                        |
-|---------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `!personal.enter`   | Start a nested session with the system prompt and configuration for personal memory system.                                                                                                                                                                                                                        |
-| `!personal.init`    | Use this to initialize the personal memory system. Only needed once. If `.personal/` exists with various files, you don't need to run this macro.                                                                                                                                                                  |
-| `!personal.compact` | This will attempt to update memories and knowledge and then compact the current session, replacing your current session context with the compact version that is generated in a nested session.                                                                                                                    |
-| `!personal.leave`   | This will leave the session started by `!personal.enter`. It performs compaction (using `!personal.compact`) and then return the parent session _without resetting the parent session's memory_.<br>This means you can _enter_ and _leave_ multiple times and collect and gather the checkpoints for the sessions. |
-<!-- markdown-table-prettify-ignore-end -->
-
-#### Utility actions
-
-#### Separate session
-
-Instead of entering and leaving in your working session, you could just spin up a separate session to use for personal updates.
-
-Run `!personal.launch` to start a new session called `personal`. You can then use `/session goto personal` to switch to it.
+| Action                  | Example                  | Include history? | Description                                                                                                                                                                                                                                                            |
+|-------------------------|--------------------------|------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| List available skills   | `!skill.list`            | No               | Lists all skills found in `./.enkaidu/skills`. Returns a JSON array where each element contains the front‑matter fields from every `SKILL.md` (name, description, etc.).                                                                                               |
+| Use a skill by its name | `!skill.use SKILLNAME`   | N/a              | Loads the named skill into the current session. Reads `./.enkaidu/skills/<name>/SKILL.md`, verifies the file exists, outputs a concise summary of the skill, and any next‑step instructions if applicable.                                                             |
+| Create your own skill   | `!skill.create "Prompt"` | Yes              | Initiates a 2‑level nested session to create a new skill from the quoted prompt. It calls `about-skills` and `skill-creator`, proposes candidate names, and after confirmation automatically creates the skill folder and files, then returns to the original session. |
 
 ## Development
-### Structure
 
 An [Enkaidu profile](https://enkaidu.dev/docs/using_enkaidu/profiles/) can have prompts, system prompts, and macros in single respectively named YAML files, or as many YAML files within respectively named folders.
 
@@ -180,6 +142,12 @@ This repository contains folders:
 | `macros/`         | Contains macros in functionally names YAML files         |
 | `prompts/`        | Contains prompts in functionally names YAML files        |
 | `system_prompts/` | Contains system prompts in functionally names YAML files |
+
+### Naming
+
+Enkaidu doesn't support namespaces syntactically. Instead we use a period `'.'` in the name of prompts, system prompts and macros to separate the namespace from their functional names, like so: `<NAMESPACE>.<FUNCTION>`
+
+E.g. `codex.init` vs `simple.init`
 
 ### Conventions
 

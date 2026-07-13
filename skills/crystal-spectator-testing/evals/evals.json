@@ -1,0 +1,20 @@
+{
+  "skill_name": "spectator-testing",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Write a spec for a Stack class with push, pop, peek, and empty? methods. Use Spectator with let for a fresh stack in each test.",
+      "expected_output": "A spec file using Spectator.describe(Stack) with let(:stack) or subject, test cases for push/pop/peek/empty? with appropriate matchers like eq, be_true, be_false, raise_error for popping an empty stack."
+    },
+    {
+      "id": 2,
+      "prompt": "Create a spec that uses doubles and stubs to test a service that depends on a repository. The service should call repo.find and repo.save — use expect-receive syntax to verify interactions.",
+      "expected_output": "A spec with def_double(:repo) defining a stub for find and save, test cases instantiating the double, calling the service, and verifying interactions with expect(dbl).to receive(:method).and_return(...). Using has_received with count modifiers."
+    },
+    {
+      "id": 3,
+      "prompt": "Write specs for a User model class that has name, age, and active? attributes. Use sample to test edge cases like negative age, zero, and boundary values.",
+      "expected_output": "A spec using Spectator.describe(User) with subject, context blocks for different scenarios, and a sample block testing multiple age values. Uses matchers like be_a, be_true, be_false, be_between."
+    }
+  ]
+}

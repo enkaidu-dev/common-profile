@@ -1,29 +1,29 @@
-simple.enter:
+dev.enter:
   description: Start a clean session with the simple system prompt
   queries:
-    - /session push keep_history=no system_prompt_name="simple.instructions"
+    - /session push keep_history=no system_prompt_name="dev.instructions"
     - /toolset load FileManagement
     - /toolset load DateAndTime
     - /toolset load TextEditing
     - /toolset load Web select=[http_get_web_page_as_markdown]
 
-simple.compact:
+dev.compact:
   description: Prepare a compact checkpoint and reset session and resume using the handoff summary
   queries:
-    - /session push
-    - /prompt use simple.compact_context show=no
+    - /session push system_prompt_name="dev.compaction_instructions"
+    - Perform a CONTEXT CHECKPOINT COMPACTION. Create a handoff summary for another LLM that will resume the task.
     - /session pop retain=last_outline replace=yes
 
-simple.init:
+dev.init:
   description: Generate AGENTS.md in a separate clean session.
   queries:
-    - /session push keep_history=no system_prompt_name="simple.instructions"
-    - /prompt use simple.init_agents_md show=no
+    - /session push keep_history=no system_prompt_name="dev.instructions"
+    - /prompt use dev.init_agents_md show=no
     - /session pop
     - Read AGENTS.md and confirm only that you have done so without further explanation.
 
-simple.leave:
-  description: Leave the session you started with `!simple.enter`, taking a compact checkpoint to the outer session.
+dev.leave:
+  description: Leave the session you started with `!dev.enter`, taking a compact checkpoint to the outer session.
   queries:
-    - "!simple.compact"
+    - "!dev.compact"
     - /session pop retain=last_full
