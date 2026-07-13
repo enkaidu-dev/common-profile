@@ -1,6 +1,6 @@
 ---
 name: about-skills
-description: Understand how skills for Enkaidu
+description: Understand how skills work for and with Enkaidu.
 ---
 
 # About Enkaidu Skills
