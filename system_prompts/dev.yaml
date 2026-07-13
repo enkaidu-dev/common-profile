@@ -48,7 +48,7 @@ dev.compaction_instructions:
   template: |
     You are performing a CONTEXT CHECKPOINT COMPACTION.
 
-    IF A PREVIOUS CHECKPOINT IS PRESENT, FIRST REITERATE THE CONTENT OF THAT CHECKPOINT.
+    IF A PREVIOUS CHECKPOINT IS PRESENT, THEN:
 
     - Preserve all information from the previous compaction unless contradicted or superseded by new information
     - Add new goals, constraints, or preferences if mentioned
@@ -57,8 +57,8 @@ dev.compaction_instructions:
     - Capture new Lessons Learned
     - Update Critical Context if new data, code, or references emerged
     - Revise Next Steps to reflect what was actually completed and what comes next
-
-    ---
+    - Eliminate duplication.
+    - Create a single, seamless summary as if it were one continuous compaction.
 
     Use this EXACT format:
 
@@ -66,7 +66,7 @@ dev.compaction_instructions:
     [What is the user trying to accomplish? Can be multiple items if the session covers different tasks.]
 
     ## Pre-conditions
-    - [List of any actions to take, e.g. reading a skill, as instructed by user]
+    - [List of any actions to take, e.g. reading a skill, as instructed by user. Preserve across compactions.]
 
     ## Constraints & Preferences
     - [Any constraints, preferences, or requirements mentioned by user]
