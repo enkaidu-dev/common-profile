@@ -4,17 +4,35 @@ skill.init:
     - "!skill.list"
     - Use the skill about skills and confirm when you've understood.
 
-skill.list:
-  description: Find and list available skills in the `.enkaidu/skills` folder.
+skill.list_json:
+  description: |
+    Find and list available skills in the `.enkaidu/skills` folder (at any depth), responding with JSON.
+    Usage: `!skill.list_json`
   queries:
     - /session push keep_history=no
     - |
-      Skills are stored in the `./.enkaidu/skills` folder. If the folder doesn't exist, there are NO skills; do not look elsewhere.
-      Each sub-folder is a skill if and only if it contains a `SKILL.md` file with YAML front-matter.
-      If there are a lot of skills, use an agent to analyze the skills and bring back the information from the front-matter (without asking agent to use more agents.)
-      To identify the available skills, read only lines 1 to 10 each skill's `SKILL.md` file and process the front-matter.
+      Skills are stored in the `./.enkaidu/skills` folder and any of its sub-folders, at any depth. If the folder doesn't exist, there are NO skills; do not look elsewhere.
+      Find every `SKILL.md` file under `./.enkaidu/skills` (recursively); the folder directly containing each `SKILL.md` is a skill, and the skill's name is that folder's name. Folders without a `SKILL.md` are just grouping/organizational folders, not skills.
+      A folder counts as a skill only if its `SKILL.md` has YAML front-matter.
+      If there are a lot of skills, use an agent to analyze the skills and bring back the information from the front-matter (without asking the agent to use more agents.)
+      To identify the available skills, read only lines 1 to 10 of each skill's `SKILL.md` file and process the front-matter.
     - /include response_json_schema './.enkaidu/skills/about-skills/assets/skill-list-schema.json'
-    - List the available skills as a JSON array with each skill as an object, with the path to the SKILL.md and properties from the front-matter. (Do not write this to a file.)
+    - List the available skills as a JSON array with each skill as an object, with the full path to the SKILL.md and properties from the front-matter. (Do not write this to a file.)
+    - /session pop retain=last_outline
+
+skill.list:
+  description: |
+    Find and list available skills in the `.enkaidu/skills` folder (at any depth), responding with a markdown table.
+    Usage: `!skill.list`
+  queries:
+    - /session push keep_history=no
+    - |
+      Skills are stored in the `./.enkaidu/skills` folder and any of its sub-folders, at any depth. If the folder doesn't exist, there are NO skills; do not look elsewhere.
+      Find every `SKILL.md` file under `./.enkaidu/skills` (recursively); the folder directly containing each `SKILL.md` is a skill, and the skill's name is that folder's name. Folders without a `SKILL.md` are just grouping/organizational folders, not skills.
+      A folder counts as a skill only if its `SKILL.md` has YAML front-matter.
+      If there are a lot of skills, use an agent to analyze the skills and bring back the information from the front-matter (without asking the agent to use more agents.)
+      To identify the available skills, read only lines 1 to 10 of each skill's `SKILL.md` file and process the front-matter.
+      Present the available skills as a markdown table with one row per skill: the skill name, the full path to its `SKILL.md`, and a short description from the front-matter. (Do not write this to a file.)
     - /session pop retain=last_outline
 
 skill.use:
@@ -23,7 +41,7 @@ skill.use:
     Usage: `!skill.use SKILLNAME`
   queries:
     - |
-      Read the skill `./.enkaidu/skills/%{1}/SKILL.md`. If there is no matching file, stop and let the user know immediately.
+      Find the skill named `%{1}`: search recursively under `./.enkaidu/skills` for a folder named `%{1}` containing a `SKILL.md`, and read that file. If there is no matching file, stop and let the user know immediately.
       Make sure you understand the skill and provide a very short summary of the skill.
       Provide next steps for using the skill iff applicable.
 
