@@ -113,11 +113,23 @@ Each namespace (referred to as `NS` below) defines the following actions as macr
 | Use `!<NS>.leave` to leave the session started by `!*.enter`. This will perform a compaction using `!*.compact` and then take that context checkpoint / hand-off summary to the parent session. **The parent session _will not be reset_**. You can _enter_ and _leave_ multiple times and collect and gather the checkpoints for the sessions.<br>*Combine this with `/session save ...` and `/session load ...` to persist checkpoints over time if that is useful.* | `!simple.leave` or `!codex.leave`   |
 <!-- markdown-table-prettify-ignore-end -->
 
-## EXPERIMENTAL
-
-### Skills (EXPERIMENTAL)
+### Skills
 
 The goal of these macros is to help understand and use (and create) skills without building the notion of skills into Enkaidu.
+
+A *skill* is any folder under `./.enkaidu/skills/` — at any depth — that directly contains a `SKILL.md` file with YAML front-matter (name, description, etc.). Folders without a `SKILL.md` are just organizational folders used to group skills, not skills themselves. A skill's name is the name of the folder directly containing its `SKILL.md`. For example:
+
+```
+.enkaidu/skills/
+  +-- about-skills/SKILL.md
+  +-- cloudops/
+      +-- ops/SKILL.md
+  +-- project/
+      +-- do-this/SKILL.md
+      +-- do-that/SKILL.md
+```
+
+Here `about-skills`, `ops`, `do-this`, and `do-that` are skills, while `cloudops` and `project` are just organizational folders.
 
 Two skills are pre-defined as they are used by the skill creator macro:
 - `about-skills`
@@ -127,9 +139,11 @@ The following macros related to skills are available to play with.
 
 | Action                  | Example                  | Include history? | Description                                                                                                                                                                                                                                                            |
 |-------------------------|--------------------------|------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| List available skills   | `!skill.list`            | No               | Lists all skills found in `./.enkaidu/skills`. Returns a JSON array where each element contains the front‑matter fields from every `SKILL.md` (name, description, etc.).                                                                                               |
-| Use a skill by its name | `!skill.use SKILLNAME`   | N/a              | Loads the named skill into the current session. Reads `./.enkaidu/skills/<name>/SKILL.md`, verifies the file exists, outputs a concise summary of the skill, and any next‑step instructions if applicable.                                                             |
-| Create your own skill   | `!skill.create "Prompt"` | Yes              | Initiates a 2‑level nested session to create a new skill from the quoted prompt. It calls `about-skills` and `skill-creator`, proposes candidate names, and after confirmation automatically creates the skill folder and files, then returns to the original session. |
+| Initialize skills       | `!skill.init`            | Yes              | Prepares the session to work with skills: lists the available skills (via `!skill.list`) and loads the `about-skills` skill so its guidance is in context.                                                                                                            |
+| List available skills   | `!skill.list`            | No               | Recursively finds every `SKILL.md` under `./.enkaidu/skills` (at any depth) and outputs a JSON array where each element contains the full path to that `SKILL.md` plus the front‑matter fields (name, description, etc.).                                              |
+| Use a skill by its name | `!skill.use SKILLNAME`   | N/a              | Loads the named skill into the current session. Searches recursively under `./.enkaidu/skills` for a folder named `SKILLNAME` containing a `SKILL.md`, stops and reports if none is found, otherwise outputs a concise summary of the skill and next‑step instructions if applicable. |
+| Create your own skill   | `!skill.create "Prompt"` | Yes              | Initiates a 2‑level nested session to create a new skill from the quoted prompt. It loads `about-skills` and `skill-creator`, researches the topic (with Web content retrieval preferred as markdown), proposes candidate names, and after confirmation automatically creates the skill folder and files, then returns to the original session. |
+| Review an existing skill | `!skill.review "Prompt"` | Yes              | Initiates a 2‑level nested session to review and update an existing skill based on the quoted prompt. It stops immediately if the described skill doesn't exist; otherwise it loads the skill and researches the topic (with Web content retrieval preferred as markdown) to improve it.                                            |
 
 ## Development
 
