@@ -222,7 +222,7 @@ flowchart LR
     style Fin stroke:#2d7,stroke-width:2px
 ```
 
-<detail>
+<details>
 <summary>One cycle of `cairn_loop`:</summary>
 
 ```mermaid
@@ -259,7 +259,8 @@ flowchart TD
 
 Each box that runs a model is a separate, clean session. Interrupts come from the
 harness tripwire, which stops a worker whose output collapses into repetition.
-</detail>
+
+</details>
 
 #### Writing good invocations
 
