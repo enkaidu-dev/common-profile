@@ -1,0 +1,184 @@
+# cairn.yaml — engine-driven Cairn emulation for small models (e.g. Qwen3-27B).
+#
+# The MACRO forks a clean worker session for each step with /session push … pop.
+# The model never orchestrates: each forked session gets ONE role and edits a
+# single board file through a fixed <END> anchor.
+#
+#   Board         -> tmp/cairn/<name>/board.md, append-only via the <END> sentinel
+#   "complete"    -> @@COMPLETED@@     in the board (goal MET)
+#   "impossible"  -> @@UNSATISFIABLE@@ in the board (goal PROVEN unreachable)
+#   "open intent" -> a line beginning OPEN_INTENT; DONE_INTENT / FAILED_INTENT
+#                    lines are closed
+#   Strikes       -> tmp/cairn/<name>/strikes, one X per interrupted worker; the run
+#                    stops at XXX (circuit breaker, reported as ABORTED)
+#   Worker        -> a forked session (push, one prompt, pop retain=none)
+#
+# Interrupt handling (last_prompt_interrupt, checked right after each pop):
+#   user      -> stop the loop; finalize reports INCOMPLETE
+#   any other -> recovery: Explore fails its intent + records a strike; Reason
+#                records a strike and is retried next cycle; Bootstrap is skipped
+#
+# Terminal statuses reported by finalize: ACHIEVED, UNSATISFIABLE, ABORTED,
+# INCOMPLETE. Workers write the board directly; safe because runs are sequential.
+
+cairn_solve:
+  description: |
+    Engine-driven Cairn-style search from an origin to a goal, scoped under
+    <name>. The macro forks each worker; the model only ever plays a worker.
+    - Usage: `!cairn_solve name="flowtest" origin="<origin>" goal="<goal>"`
+  queries:
+    - <enter>:
+        - ?break if file_exists=tmp/cairn/%{name}/board.md
+        - |
+          Use write_text_file to create the file "tmp/cairn/%{name}/board.md" with
+          EXACTLY these lines and nothing else:
+
+          # Cairn board: %{name}
+          GOAL: %{goal}
+          FACT origin [from=]: %{origin}
+          <END>
+
+          Then say "init done".
+    # BOOTSTRAP — one clean attempt, in its own forked session
+    - /session push keep_tools=yes keep_prompts=no keep_history=no
+    - |
+      You are the BOOTSTRAP step: one direct attempt to satisfy the goal before
+      any search. Do exactly this:
+      1. read_text_file "tmp/cairn/%{name}/board.md". The GOAL line is the goal;
+         FACT lines are confirmed findings.
+      2. Try to satisfy the GOAL directly.
+         - If you DEFINITIVELY satisfy it: use str_replace_in_text_file to
+           replace the text "<END>" with your goal fact line
+           "FACT goal [from=origin]: <one sentence why it is met>", then a line
+           break, then the token @@COMPLETED@@ on its own line, then a line
+           break, then "<END>" again.
+         - If you confirm a partial finding only: replace "<END>" with
+           "FACT f001 [from=origin]: <finding>", a line break, then "<END>".
+         - If the task clearly cannot be finished in one pass: change nothing.
+      3. Record only confirmed facts; never guess. Edit only via the file tools.
+         If you run any script, put it under "tmp/cairn/%{name}/scratch/" (create it
+         if needed) and leave it in place; do not scatter files in the project root.
+      Say "bootstrap done".
+    - /session pop retain=none
+    - ?break if last_prompt_interrupt=user
+    - "!cairn_loop name=%{name}"
+    # FINALIZE — one forked session, runs once after the loop halts
+    - /session push keep_tools=yes keep_prompts=no keep_history=no
+    - |
+      You are the FINALIZE step. Do exactly this:
+      1. read_text_file "tmp/cairn/%{name}/board.md", and read_text_file
+         "tmp/cairn/%{name}/strikes" if that file exists.
+      2. write_text_file "tmp/cairn/%{name}/result.md" containing: the GOAL; the
+         TERMINAL STATUS — "ACHIEVED" if the board contains @@COMPLETED@@,
+         "UNSATISFIABLE" if it contains @@UNSATISFIABLE@@, "ABORTED" if the
+         strikes file contains XXX, otherwise "INCOMPLETE"; the number of X
+         characters in the strikes file (0 if it does not exist); the ordered
+         chain of FACT lines from origin to the goal fact; the intents that ended
+         as DONE_INTENT; and the intents that ended as FAILED_INTENT. Do not
+         change the board.
+      Say "finalize done".
+    - /session pop retain=none
+
+cairn_loop:
+  description: |
+    One dispatcher cycle driven by the engine: a REASON worker, then an EXPLORE
+    worker, each followed by interrupt recovery, then self-invoke. Halts on
+    @@COMPLETED@@, @@UNSATISFIABLE@@, three strikes, or a user interrupt.
+    Internal; invoked by cairn_solve.
+  queries:
+    - ?break if file=tmp/cairn/%{name}/board.md contains=@@COMPLETED@@
+    - ?break if file=tmp/cairn/%{name}/board.md contains=@@UNSATISFIABLE@@
+    - ?break if file=tmp/cairn/%{name}/strikes contains=XXX
+    # REASON — forked session
+    - /session push keep_tools=yes keep_prompts=no keep_history=no
+    - |
+      You are the REASON step. Do exactly this:
+      1. read_text_file "tmp/cairn/%{name}/board.md". FACT lines are confirmed
+         findings; OPEN_INTENT lines are directions not yet explored;
+         FAILED_INTENT lines are directions whose worker crashed without a
+         finding.
+      2. Decide the status of the GOAL given the FACT lines.
+         - If the facts SATISFY the goal: use str_replace_in_text_file to replace
+           "<END>" with
+           "FACT goal [from=<comma-separated supporting fact ids, no spaces>]: <why it is met>",
+           a line break, the token @@COMPLETED@@ on its own line, a line break,
+           then "<END>".
+         - If the facts PROVE the goal can NEVER be satisfied — a goal-level dead
+           end, e.g. the required result is impossible or contradicts a confirmed
+           fact: replace "<END>" with
+           "FACT goal [from=<supporting fact ids>]: <why it is impossible>", a
+           line break, the token @@UNSATISFIABLE@@ on its own line, a line break,
+           then "<END>". Use this ONLY when impossibility is established by the
+           facts — never because work merely remains, a step was hard, or a
+           worker crashed.
+         - If the goal is not yet satisfied and there are NO OPEN_INTENT lines:
+           for each worthwhile next direction, replace "<END>" with
+           "OPEN_INTENT iNNN [from=<fact ids>]: <direction>", a line break, then
+           "<END>" (use the next unused iNNN; count all existing intent lines of
+           every kind). Do not re-propose a FAILED_INTENT direction unchanged; if
+           you retry one, make it smaller or approach it differently.
+         - If the goal is not yet satisfied but OPEN_INTENT lines already exist:
+           change nothing.
+      3. Do NOT carry out any direction yourself; only reason and propose.
+      Edit only via the file tools. Say "reason done".
+    - /session pop retain=none
+    - ?break if last_prompt_interrupt=user
+    # REASON RECOVERY — runs only if Reason was interrupted; Reason retries next cycle
+    - <enter>:
+        - ?break unless last_prompt_interrupt=any
+        - /session push keep_tools=yes keep_prompts=no keep_history=no
+        - |
+          Record one strike. If the file "tmp/cairn/%{name}/strikes" exists,
+          read_text_file it; then write_text_file "tmp/cairn/%{name}/strikes" with its
+          previous content followed by exactly one more X (just "X" if it did not
+          exist). Do nothing else. Say "strike recorded".
+        - /session pop retain=none
+    - ?break if file=tmp/cairn/%{name}/board.md contains=@@COMPLETED@@
+    - ?break if file=tmp/cairn/%{name}/board.md contains=@@UNSATISFIABLE@@
+    # EXPLORE — forked session, skipped when no open intents remain
+    - <enter>:
+        - ?break unless file=tmp/cairn/%{name}/board.md contains=OPEN_INTENT
+        - /session push keep_tools=yes keep_prompts=no keep_history=no
+        - |
+          You are the EXPLORE step. Do exactly this:
+          1. read_text_file "tmp/cairn/%{name}/board.md".
+          2. Find the LAST line that begins with "OPEN_INTENT" — that is your
+             assigned intent. Note its iNNN id and its [from=...] ids.
+          3. Carry out ONLY that direction and produce one confirmed finding (a
+             dead end is itself a finding). If it needs computation, write and
+             run a ruby script via the ruby shell command and use its output.
+             Put any scripts or temporary files under "tmp/cairn/%{name}/scratch/"
+             (create it if needed), named after the intent id — e.g.
+             "tmp/cairn/%{name}/scratch/i007.rb". Do not scatter files in the project
+             root, and leave the scripts in place (do not delete them).
+          4. Append the finding: use str_replace_in_text_file to replace "<END>"
+             with "FACT fNNN [from=<the intent's from ids>]: <finding>", a line
+             break, then "<END>" (next unused fNNN; count existing FACT lines).
+          5. Mark the intent done: use str_replace_in_text_file to replace
+             "OPEN_INTENT iNNN" with "DONE_INTENT iNNN" for the id you handled.
+          Edit only via the file tools. Say "explore done".
+        - /session pop retain=none
+        - ?break if last_prompt_interrupt=user
+        # EXPLORE RECOVERY — runs only if Explore was interrupted
+        - <enter>:
+            - ?break unless last_prompt_interrupt=any
+            - /session push keep_tools=yes keep_prompts=no keep_history=no
+            - |
+              A worker crashed while exploring an intent. Do exactly this, using
+              only the file tools and no other reasoning:
+              1. read_text_file "tmp/cairn/%{name}/board.md". Find the LAST line that
+                 begins with "OPEN_INTENT"; note its iNNN id and [from=...] ids.
+              2. Use str_replace_in_text_file to replace "OPEN_INTENT iNNN" with
+                 "FAILED_INTENT iNNN" for that id.
+              3. Use str_replace_in_text_file to replace "<END>" with
+                 "FACT fNNN [from=<that intent's from ids>]: exploring iNNN was interrupted by the watchdog; no finding",
+                 a line break, then "<END>" (next unused fNNN; count existing
+                 FACT lines).
+              4. Record one strike: if "tmp/cairn/%{name}/strikes" exists,
+                 read_text_file it; then write_text_file "tmp/cairn/%{name}/strikes"
+                 with its previous content followed by exactly one more X (just
+                 "X" if it did not exist).
+              Say "recovery done".
+            - /session pop retain=none
+    - ?break if last_prompt_interrupt=user
+    - "!cairn_loop name=%{name}"
