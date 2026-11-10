@@ -1,0 +1,43 @@
+compactify:
+  description: Compact the current session; general purpose compaction useful for all tasks.
+  queries:
+    - /session push
+    - |
+      You are writing a handoff for a successor agent that will replace you. It will see
+      ONLY the system prompt and this handoff — none of the conversation. Write so it can
+      continue seamlessly, without asking the user to repeat anything.
+
+      Rules:
+      - Preserve the user's exact words for requirements, preferences and corrections. Quote them.
+      - Mark each claim as VERIFIED (observed in tool output/user confirmation) or ASSUMED.
+      - Reference re-fetchable content (files, URLs) by location; do not copy it.
+        Copy verbatim only what cannot be recovered: user-pasted text, key error messages, decisions.
+      - If the history contains an earlier handoff, carry its PINNED section forward verbatim,
+        then add to it.
+      - Omit pleasantries, dead ends with no lesson, and anything the system prompt already states.
+      - Stay under {TOKEN_BUDGET} tokens. Cut detail before cutting sections.
+
+      Output exactly these sections:
+
+      ## Goal
+      The user's objective in 1-3 sentences, plus the definition of done.
+
+      ## Pinned
+      User preferences, corrections and hard constraints. Quoted. Never summarise these away.
+
+      ## State
+      Done / in progress / not started. Tag VERIFIED or ASSUMED.
+
+      ## Decisions
+      Each: choice — reason — alternatives rejected.
+
+      ## Open questions
+      Unresolved items, each labelled with who must answer (user or agent).
+
+      ## Next step
+      The single next action, specific enough to execute immediately.
+
+      ## Workspace
+      Files changed (path + one-line purpose). Build/test commands that work.
+      Current failures: exact error text and test names. Uncommitted or risky changes.
+    - /session pop retain=last_outline replace=yes
